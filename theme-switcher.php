@@ -99,11 +99,7 @@ final class Theme_Switcher {
 	 * @since 1.0.0
 	 */
 	private function includes() {
-
-		// Load switcher classes
-		if ( ! class_exists( 'Conditional_Themes_Switcher' ) && ! class_exists( 'Conditional_Themes_Manager' ) ) {
-			require( $this->includes_dir . 'class-conditional-themes-switcher.php' );
-		}
+		require( $this->includes_dir . 'class-conditional-themes-switcher.php' );
 	}
 
 	/**
@@ -194,7 +190,7 @@ final class Theme_Switcher {
 	 * @return int Current user ID
 	 */
 	public function get_current_user_id() {
-		return ! did_action( 'set_current_user' ) ? apply_filters( 'determine_current_user', 0 ) : get_current_user_id();
+		return did_action( 'set_current_user' ) ? get_current_user_id() : apply_filters( 'determine_current_user', 0 );
 	}
 
 	/**
@@ -259,8 +255,8 @@ final class Theme_Switcher {
 		add_settings_field( 'theme-switcher', __( 'Theme Switcher', 'theme-switcher' ), array( $this, 'display_settings' ), 'reading' );
 
 		// Settings
-		register_setting( 'reading', 'theme-switcher',              array( $this, 'sanitize_checkbox' ) );
-		register_setting( 'reading', 'theme-switcher_switch-theme'                                      );
+		register_setting( 'reading', 'theme-switcher', array( $this, 'sanitize_checkbox' ) );
+		register_setting( 'reading', 'theme-switcher_switch-theme' );
 	}
 
 	/**
@@ -350,7 +346,7 @@ final class Theme_Switcher {
 		}
 
 		// Send user back
-		$sendback = remove_query_arg( array( 'action', '_wpnonce' ), wp_get_referer() );
+		$sendback = esc_url_raw( remove_query_arg( array( 'action', '_wpnonce' ), wp_get_referer() ) );
 		wp_redirect( $sendback );
 		exit;
 	}
@@ -375,8 +371,8 @@ final class Theme_Switcher {
 			Conditional_Themes_Manager::set_option( 'persistent', false );
 
 			// Switch theme
-			// Conditional_Themes_Manager::register( $this->get_switch_theme(), '__return_true' );
-			Conditional_Themes_Manager::register( $this->get_switch_theme(), array( $this, 'switch_conditional' ) );
+			Conditional_Themes_Manager::register( $this->get_switch_theme(), '__return_true' );
+			// Conditional_Themes_Manager::register( $this->get_switch_theme(), array( $this, 'switch_conditional' ) );
 		}
 	}
 
@@ -394,7 +390,7 @@ final class Theme_Switcher {
 	}
 
 	/**
-	 * Add the plugin's admin bar menu item
+	 * Add the switcher to the admin bar menu
 	 * 
 	 * @since 1.0.0
 	 *
@@ -406,40 +402,40 @@ final class Theme_Switcher {
 	 */
 	public function admin_bar_menu( $wp_admin_bar ) {
 
-		// For capable users when switching is enabled
-		if ( current_user_can( 'manage_options' ) && $this->is_switching_enabled() ) {
+		// Bail when the user is not capable or when switching is disabled
+		if ( ! current_user_can( 'manage_options' ) || ! $this->is_switching_enabled() )
+			return;
 
-			// Get the switch-to theme
-			$theme = wp_get_theme( $this->get_switch_theme() );
+		// Get the switch-to theme
+		$theme = wp_get_theme( $this->get_switch_theme() );
 
-			// Bail when the theme is missing
-			if ( ! $theme->exists() )
-				return;
+		// Bail when the theme is missing
+		if ( ! $theme->exists() )
+			return;
 
-			// When switched
-			$switched = $this->switcher()->get_switched_theme();
-			if ( $switched ) {
-				$title = __( 'Switch back to the original layout.', 'theme-switcher' ); 
-			} else {
-				$title = sprintf( __( 'Switch the layout to the %s theme.', 'theme-switcher' ), $theme->title );
-			}
-
-			// Add toggle anchor in the admin bar menu
-			$wp_admin_bar->add_menu( array(
-				'id'        => 'theme-switcher',
-				'parent'    => 'top-secondary',
-				'title'     => '<span class="ab-icon"></span><span class="screen-reader-text">' . $title . '</span>',
-				'href'      => wp_nonce_url( add_query_arg( 'action', 'switch-theme' ), 'theme-switcher-user' ),
-				'meta'      => array(
-					'class'     => $switched ? 'hover active' : '',
-					'title'     => esc_attr( $title )
-				),
-			) );
-
-			// Hook admin bar styles. After core's footer scripts
-			add_action( 'wp_footer',    array( $this, 'admin_bar_scripts' ), 21 );
-			add_action( 'admin_footer', array( $this, 'admin_bar_scripts' ), 21 );
+		// When switched
+		$switched = $this->switcher()->get_switched_theme();
+		if ( $switched ) {
+			$title = __( 'Switch back to the original layout.', 'theme-switcher' ); 
+		} else {
+			$title = sprintf( __( 'Switch the layout to the %s theme.', 'theme-switcher' ), $theme->title );
 		}
+
+		// Add menu item
+		$wp_admin_bar->add_menu( array(
+			'id'        => 'theme-switcher',
+			'parent'    => 'top-secondary',
+			'title'     => '<span class="ab-icon"></span><span class="screen-reader-text">' . $title . '</span>',
+			'href'      => esc_url( wp_nonce_url( add_query_arg( 'action', 'switch-theme' ), 'theme-switcher-user' ) ),
+			'meta'      => array(
+				'class'     => $switched ? 'hover active' : '',
+				'title'     => esc_attr( $title )
+			),
+		) );
+
+		// Hook admin bar styles. After core's footer scripts
+		add_action( 'wp_footer',    array( $this, 'admin_bar_scripts' ), 21 );
+		add_action( 'admin_footer', array( $this, 'admin_bar_scripts' ), 21 );
 	}
 
 	/**

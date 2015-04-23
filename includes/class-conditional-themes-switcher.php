@@ -1,4 +1,15 @@
 <?php
+
+/**
+ * Conditional Themes Classes
+ * 
+ * @package Theme Switcher
+ * @subpackage Main
+ */
+
+// Exit if accessed directly
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Plugin Name: Conditional Themes
  * Plugin URI: https://github.com/nash-ye/WP-Conditional-Themes
@@ -13,6 +24,9 @@
  */
 
 add_action( 'plugins_loaded', array( 'Conditional_Themes_Switcher', 'instance' ), 99 );
+
+// Only define classes once
+if ( ! class_exists( 'Conditional_Themes_Switcher' ) ) :
 
 /**
  * Tne Conditional Themes Switcher class.
@@ -320,6 +334,11 @@ class Conditional_Themes_Switcher {
 
 }
 
+endif;
+
+// Only define classes once
+if ( ! class_exists( 'Conditional_Themes_Manager' ) ) :
+
 /**
  * Tne Conditional Themes Manager class.
  *
@@ -478,3 +497,5 @@ class Conditional_Themes_Manager {
 	}
 
 }
+
+endif;
