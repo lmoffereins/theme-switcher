@@ -287,6 +287,8 @@ final class Theme_Switcher {
 		?></label>
 		<p class="description"><?php _e( 'By default, theme switching is only allowed for site admins.', 'theme-switcher' ); ?></p>
 
+		<?php if ( $this->has_section_settings_fields( 'reading', 'theme-switcher' ) ) : ?>
+
 		<div id="theme-switcher-settings" <?php if ( ! $enabled ) { echo 'class="hidden"'; } ?>>
 			<h4><?php _e( 'Theme Switcher Settings', 'theme-switcher' ); ?></h4>
 
@@ -295,7 +297,21 @@ final class Theme_Switcher {
 			</table>
 		</div>
 
-		<?php
+		<?php endif;
+	}
+
+	/**
+	 * Return whether the given settings section has settings fields
+	 *
+	 * @since 1.0.1
+	 * 
+	 * @param string $page Page name of the section
+	 * @param string $section Section name
+	 * @return bool Section has settings fields
+	 */
+	public function has_section_settings_fields( $page, $section ) {
+		global $wp_settings_fields;
+		return isset( $wp_settings_fields[ $page ][ $section ] ) && ! empty( $wp_settings_fields[ $page ][ $section ] );
 	}
 
 	/**
