@@ -454,9 +454,9 @@ final class Theme_Switcher {
 		// When switched
 		$switched = $this->switcher()->get_switched_theme();
 		if ( $switched ) {
-			$title = __( 'Switch back to the original layout.', 'theme-switcher' ); 
+			$title = __( 'Switch back to the original layout', 'theme-switcher' ); 
 		} else {
-			$title = sprintf( __( 'Switch the layout to the %s theme.', 'theme-switcher' ), $theme->title );
+			$title = sprintf( __( 'Switch the layout to the %s theme', 'theme-switcher' ), $theme->title );
 		}
 
 		// Add menu item
