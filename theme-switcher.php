@@ -123,6 +123,9 @@ final class Theme_Switcher {
 
 		// Plugin settings
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+
+		// Settings link
+		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
 	}
 
 	/** Plugin **********************************************************/
@@ -239,7 +242,26 @@ final class Theme_Switcher {
 		return (bool) $retval;
 	}
 
-	/** Public methods **************************************************/
+	/** Admin methods ***************************************************/
+
+	/**
+	 * Append a link to the plugin's settings page
+	 *
+	 * @since 1.0.1
+	 * 
+	 * @param array $actions Action links
+	 * @param string $plugin Plugin basename
+	 * @return array Actions
+	 */
+	public function plugin_action_links( $actions, $plugin ) {
+
+		// This is our plugin
+		if ( $this->basename === $plugin ) {
+			$actions['settings'] = sprintf( '<a href="%s">%s</a>', admin_url( 'options-reading.php' ), __( 'Settings' ) );
+		}
+
+		return $actions;
+	}
 
 	/**
 	 * Register the plugin's settings
