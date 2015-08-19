@@ -402,8 +402,8 @@ final class Theme_Switcher {
 	 */
 	public function maybe_switch() {
 
-		// Switching is enabled for both the site and the user
-		if ( $this->is_switching_enabled() && $this->is_switching_user_enabled() ) {
+		// Switching is enabled for both the site and the user and the user is capable
+		if ( $this->is_switching_enabled() && $this->is_switching_user_enabled() && current_user_can( 'manage_options' ) ) {
 
 			// No persistent switch. Only for the current user
 			Conditional_Themes_Manager::set_option( 'persistent', false );
