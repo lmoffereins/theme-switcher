@@ -440,8 +440,8 @@ final class Theme_Switcher {
 	 */
 	public function admin_bar_menu( $wp_admin_bar ) {
 
-		// Bail when the user is not capable or when switching is disabled
-		if ( ! current_user_can( 'manage_options' ) || ! $this->is_switching_enabled() )
+		// Bail when in the network admin, the user is not capable or when switching is disabled
+		if ( is_network_admin() || ! current_user_can( 'manage_options' ) || ! $this->is_switching_enabled() )
 			return;
 
 		// Get the switch-to theme
