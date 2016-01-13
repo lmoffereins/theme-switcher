@@ -187,12 +187,39 @@ class Conditional_Themes_Switcher {
 
 		if ( FALSE === $sidebars_widgets ) {
 
-			$current_sidebars_widgets = get_theme_mod( 'sidebars_widgets' );
+			$mod = get_theme_mod( 'sidebars_widgets' );
 
-			if ( is_array( $current_sidebars_widgets ) ) {
-				$sidebars_widgets = $current_sidebars_widgets['data'];
+			if ( is_array( $mod ) ) {
+				$sidebars_widgets = isset( $mod['data'] ) ? $mod['data'] : false;
 			}
 
+		}
+
+		return $sidebars_widgets;
+
+	}
+
+	/**
+	 * Update the switched theme sidebars widgets.
+	 * Used as a callback for 'pre_update_option_sidebars_widgets' WP filter.
+	 *
+	 * @author Laurens Offereins https://github.com/lmoffereins
+	 * @return array
+	 * @since 0.4
+	 */
+	public function update_sidebars_widgets( $sidebars_widgets, $old_value ) {
+
+		$theme = $this->get_switched_theme();
+
+		if ( $theme instanceof WP_Theme ) {
+
+			$mod = get_theme_mod( 'sidebars_widgets', array() );
+			$mod['data'] = $sidebars_widgets;
+
+			set_theme_mod( 'sidebars_widgets', $mod );
+
+			// Return old value in order to bail the original update logic
+			$sidebars_widgets = $old_value;
 		}
 
 		return $sidebars_widgets;
@@ -291,6 +318,8 @@ class Conditional_Themes_Switcher {
 			add_filter( 'pre_option_template_root', array( $this, 'filter_template_root' ) );
 			add_filter( 'pre_option_stylesheet_root', array( $this, 'filter_stylesheet_root' ) );
 			add_filter( 'pre_option_sidebars_widgets', array( $this, 'filter_sidebars_widgets' ) );
+
+			add_filter( 'pre_update_option_sidebars_widgets', array( $this, 'update_sidebars_widgets' ), 10, 2 );
 
 		}
 
