@@ -204,8 +204,10 @@ class Conditional_Themes_Switcher {
 	 * Used as a callback for 'pre_update_option_sidebars_widgets' WP filter.
 	 *
 	 * @author Laurens Offereins https://github.com/lmoffereins
+	 *
+	 * @since Theme Switcher 1.0.2
+	 *
 	 * @return array
-	 * @since 0.4
 	 */
 	public function update_sidebars_widgets( $sidebars_widgets, $old_value ) {
 
@@ -223,7 +225,6 @@ class Conditional_Themes_Switcher {
 		}
 
 		return $sidebars_widgets;
-
 	}
 
 	/**
