@@ -11,7 +11,7 @@
  * Plugin Name:       Theme Switcher
  * Description:       Enable theme switching for admin users. Based on solid work in the <a href="https://github.com/nash-ye/WP-Conditional-Themes">Conditional Themes</a> plugin.
  * Plugin URI:        https://github.com/lmoffereins/theme-switcher/
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            Laurens Offereins
  * Author URI:        https://github.com/lmoffereins/
  * Text Domain:       theme-switcher
@@ -70,7 +70,7 @@ final class Theme_Switcher {
 
 		/** Versions **********************************************************/
 
-		$this->version      = '1.0.1';
+		$this->version      = '1.0.2';
 
 		/** Paths *************************************************************/
 
