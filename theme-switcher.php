@@ -405,8 +405,13 @@ final class Theme_Switcher {
 	 */
 	public function maybe_switch() {
 
-		// Switching is enabled for both the site and the user and the user is capable
-		if ( $this->is_switching_enabled() && $this->is_switching_user_enabled() && current_user_can( 'manage_options' ) ) {
+		// Switching is enabled for both the site and the user
+		if ( $this->is_switching_enabled() && $this->is_switching_user_enabled() ) {
+
+			// Checking for user capabilities fails when before 'init':
+			// `$user->has_cap()` runs `is_super_admin` which eventually runs `set_current_user`
+			// if ( ! user_can( $this->get_current_user_id(), 'manage_options' ) )
+			// 	return;
 
 			// No persistent switch. Only for the current user
 			Conditional_Themes_Manager::set_option( 'persistent', false );
