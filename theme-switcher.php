@@ -99,7 +99,10 @@ final class Theme_Switcher {
 	 * @since 1.0.0
 	 */
 	private function includes() {
+
+		// Load switcher classes
 		require( $this->includes_dir . 'class-conditional-themes-switcher.php' );
+		require( $this->includes_dir . 'class-conditional-themes-manager.php'  );
 	}
 
 	/**
