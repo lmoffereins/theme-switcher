@@ -121,6 +121,9 @@ final class Theme_Switcher {
 		// Maybe update switch
 		add_action( 'init', array( $this, 'maybe_update_switch' ), 1 );
 
+		// Capabilities
+		add_filter( 'map_meta_cap', array( $this, 'map_meta_cap' ), 10, 4 );
+
 		// Admin bar menu switcher
 		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ) );
 
@@ -243,6 +246,30 @@ final class Theme_Switcher {
 		}
 
 		return (bool) $retval;
+	}
+
+	/**
+	 * Resolve plugin capabilities
+	 *
+	 * @since 1.0.3
+	 *
+	 * @param array $caps
+	 * @param string $cap
+	 * @param int $user_id
+	 * @param array $args
+	 * @return array Required capabilities
+	 */
+	public function map_meta_cap( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
+
+		switch ( $cap ) {
+
+			// Allow administrators to switch
+			case 'theme_switcher_switch' :
+				$caps = array( 'manage_options' );
+				break;
+		}
+
+		return $caps;
 	}
 
 	/** Admin methods ***************************************************/
@@ -410,7 +437,7 @@ final class Theme_Switcher {
 
 			// Checking for user capabilities fails when before 'init':
 			// `$user->has_cap()` runs `is_super_admin` which eventually runs `set_current_user`
-			// if ( ! user_can( $this->get_current_user_id(), 'manage_options' ) )
+			// if ( ! user_can( $this->get_current_user_id(), 'theme_switcher_switch' ) )
 			// 	return;
 
 			// No persistent switch. Only for the current user
@@ -449,7 +476,7 @@ final class Theme_Switcher {
 	public function admin_bar_menu( $wp_admin_bar ) {
 
 		// Bail when in the network admin, the user is not capable or when switching is disabled
-		if ( is_network_admin() || ! current_user_can( 'manage_options' ) || ! $this->is_switching_enabled() )
+		if ( is_network_admin() || ! current_user_can( 'theme_switcher_switch' ) || ! $this->is_switching_enabled() )
 			return;
 
 		// Get the switch-to theme
